@@ -1,7 +1,5 @@
+import PageContent from "./PageContent";
+
 export default function ResumePage() {
-  return (
-    <section>
-      <div>this is my ResumePage</div>
-    </section>
-  );
+  return <PageContent />;
 }
