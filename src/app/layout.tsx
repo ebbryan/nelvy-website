@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import SideBar from "@/components/Sidebar";
 import ProgressBarProvider from "@/components/ProgressBar";
+import { Toaster } from "@/components/ui/sonner";
 
 export const metadata: Metadata = {
   title: "Nelvy Holares",
@@ -17,8 +18,9 @@ export default function RootLayout({
     <html lang="en">
       <body className={`antialiased`}>
         <ProgressBarProvider>
-        <SideBar>{children}</SideBar>
+          <SideBar>{children}</SideBar>
         </ProgressBarProvider>
+        <Toaster />
       </body>
     </html>
   );

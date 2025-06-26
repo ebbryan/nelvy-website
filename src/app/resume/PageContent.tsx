@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Download, Pencil, Save } from "lucide-react";
 import Image from "next/image";
 import Spinner from "@/components/Spinner";
+import { toast } from "sonner";
 
 const PageContent = () => {
   const pathname = usePathname();
@@ -38,13 +39,21 @@ const PageContent = () => {
     setResumeData(updatedData);
     setEditing(null);
 
-    await fetch("/api/resume", {
+    const res = await fetch("/api/resume", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(updatedData),
     });
+
+    if (res.ok) {
+      toast.success("Successfully updated !", { position: "bottom-left" });
+    } else {
+      toast.error("Failed to save", {
+        description: "Something went wrong while saving your data.",
+      });
+    }
   };
 
   if (loading)
@@ -77,8 +86,8 @@ const PageContent = () => {
         </h1>
       </div>
 
-      <div className="w-full flex flex-col md:flex-row gap-4">
-        <Card className="w-full">
+      <div className="w-full flex flex-col-reverse items-center md:flex-row gap-4">
+        <Card className="w-full hidden md:block h-full">
           <CardHeader className="flex flex-row justify-between items-center">
             <CardTitle>Career Objective</CardTitle>
             {editing === "careerObjective" ? (
@@ -100,7 +109,7 @@ const PageContent = () => {
               </Button>
             )}
           </CardHeader>
-          <CardContent>
+          <CardContent className="mt-5">
             {editing === "careerObjective" ? (
               <textarea
                 className="w-full p-2 border rounded"
@@ -114,18 +123,53 @@ const PageContent = () => {
           </CardContent>
         </Card>
 
-        <div className="w-2/12 flex flex-col items-center justify-center">
+        <div className="w-1/3 md:w-2/12 flex flex-col items-center justify-center">
           <Image
             src="/nelvy.jpg"
             alt="Image"
             className="rounded-md object-cover"
-            width={200}
-            height={200}
+            width={400}
+            height={400}
           />
         </div>
       </div>
 
-      <div className="w-full h-full overflow-auto  space-y-6">
+      <div className="w-full h-full overflow-auto space-y-6">
+        <Card className="w-full block md:hidden">
+          <CardHeader className="flex flex-row justify-between items-center">
+            <CardTitle>Career Objective</CardTitle>
+            {editing === "careerObjective" ? (
+              <Button
+                size="sm"
+                onClick={() => handleSaveClick("careerObjective")}
+              >
+                <Save className="w-4 h-4 mr-1" /> Save
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() =>
+                  handleEditClick("careerObjective", resumeData.careerObjective)
+                }
+              >
+                <Pencil className="w-4 h-4 mr-1" /> Edit
+              </Button>
+            )}
+          </CardHeader>
+          <CardContent className="mt-5">
+            {editing === "careerObjective" ? (
+              <textarea
+                className="w-full p-2 border rounded"
+                rows={5}
+                value={editedValue}
+                onChange={(e) => setEditedValue(e.target.value)}
+              />
+            ) : (
+              <p>{resumeData.careerObjective}</p>
+            )}
+          </CardContent>
+        </Card>
         <div className="w-full flex flex-col md:flex-row gap-4">
           <Card className="w-full">
             <CardHeader className="flex flex-row justify-between items-center">

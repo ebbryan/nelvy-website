@@ -8,6 +8,7 @@ export async function GET() {
   return NextResponse.json(resume);
 }
 
+
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const { _id, ...updateBody } = body;
