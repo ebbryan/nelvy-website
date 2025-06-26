@@ -18,7 +18,10 @@ export async function POST(req: NextRequest) {
   const user = await users.findOne({ username });
 
   if (!user) {
-    return { message: "User does not exist!", success: false };
+    return NextResponse.json({
+      message: "User does not exist !",
+      success: false,
+    });
   }
 
   if (user.password !== password) {

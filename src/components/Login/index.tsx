@@ -13,6 +13,7 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
+import { Pencil } from "lucide-react";
 
 type UserAccountType = {
   username: string;
@@ -47,7 +48,10 @@ const LoginComponent = ({ title }: { title: string }) => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline">{title}</Button>
+        <Button variant="outline">
+          <Pencil className="mr-2" />
+          {title}
+        </Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>

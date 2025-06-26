@@ -12,11 +12,12 @@ const SideBarMenu = ({
   onNavigate: (path: string) => void;
   onClose?: () => void;
 }) => {
+  const router = useRouter();
   const path = usePathname();
   const menuItems = [
-    { id: 1, title: "About Nelvy", path: "/about-nelvy" },
-    { id: 2, title: "Resume", path: "/resume" },
-    { id: 3, title: "Contact Me", path: "/contact-me" },
+    { id: 1, title: "Home", path: "/" },
+    { id: 2, title: "My Resume", path: "/resume" },
+    // { id: 3, title: "Contact Me", path: "/contact-me" },
   ];
 
   return (
@@ -28,7 +29,12 @@ const SideBarMenu = ({
         </button>
       </div>
 
-      <h1 className="text-3xl">Nelvy O. Holares</h1>
+      <h1
+        className="text-3xl hover:cursor-pointer font-bold"
+        onClick={() => router.push("/")}
+      >
+        Nelvy
+      </h1>
 
       <div className="flex flex-col items-center justify-center gap-2 w-full">
         {menuItems.map((item) => (
@@ -85,7 +91,7 @@ const SideBar = ({ children }: { children: ReactNode }) => {
       </aside>
 
       {/* Main content */}
-      <section className="w-full overflow-auto p-4">{children}</section>
+      <section className="w-full overflow-auto p-6">{children}</section>
     </main>
   );
 };

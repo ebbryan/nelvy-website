@@ -3,11 +3,9 @@
 
 import { useEffect, useState } from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { usePathname } from "next/navigation";
-import { defaultTheme } from "@/lib/theme";
 import { calculateAge } from "@/lib/calculateAge";
 import { Button } from "@/components/ui/button";
-import { Download, Pencil, Save } from "lucide-react";
+import { Ellipsis, Eye, Pencil, Save } from "lucide-react";
 import Image from "next/image";
 import Spinner from "@/components/Spinner";
 import { toast } from "sonner";
@@ -17,15 +15,16 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import LoginComponent from "@/components/Login";
+import { useRouter } from "@bprogress/next";
 
 const PageContent = () => {
-  const pathname = usePathname();
+  const router = useRouter();
   const [resumeData, setResumeData] = useState<any>(null);
+  console.log("🚀 ~ PageContent ~ resumeData:", resumeData);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<string | null>(null);
   const [editedValue, setEditedValue] = useState<any>("");
   const [editMode, setEditMode] = useState(false);
-  console.log("🚀 ~ PageContent ~ editMode:", editMode);
 
   useEffect(() => {
     const fetchResume = async () => {
@@ -87,14 +86,36 @@ const PageContent = () => {
     ),
   ];
 
+  const onPreview = (id: string) => {
+    if (!id) return;
+    return router.push(`/resume/${id}`);
+  };
   return (
     <section className="h-full flex flex-col items-center gap-2">
-      <div className="p-5 w-full items-end justify-end flex md:hidden sm:flex">
-        <h1
-          className={`text-2xl font-black text-[${defaultTheme.color.primary}]`}
-        >
-          {pathname === "/resume" && "My Resume"}
-        </h1>
+      <div className="w-full items-end lg:items-start justify-end lg:justify-start flex">
+        {editMode ? (
+          <Button variant="default" onClick={onSaveChanges}>
+            Save Changes
+          </Button>
+        ) : (
+          <Popover>
+            <PopoverTrigger
+              className={`hover:bg-[#0E0C01] hover:text-white px-6 py-2 transition-all rounded-sm shadow-md`}
+            >
+              <Ellipsis />
+            </PopoverTrigger>
+            <PopoverContent className="flex flex-col w-auto gap-1.5">
+              <LoginComponent title="Update Resume" />
+              <Button
+                className="w-full md:w-auto"
+                onClick={() => onPreview(resumeData._id)}
+              >
+                <Eye className="mr-2" />
+                Preview Resume
+              </Button>
+            </PopoverContent>
+          </Popover>
+        )}
       </div>
 
       <div className="w-full flex flex-col-reverse items-center md:flex-row gap-4">
@@ -483,29 +504,6 @@ const PageContent = () => {
             <p className="mt-4 font-bold">{resumeData.signature}</p>
           </CardContent>
         </Card>
-      </div>
-
-      <div className="p-5 w-full items-end justify-end flex">
-        {editMode ? (
-          <Button variant="default" onClick={onSaveChanges}>
-            Save Changes
-          </Button>
-        ) : (
-          <Popover>
-            <PopoverTrigger>Menu</PopoverTrigger>
-            <PopoverContent className="flex flex-col w-auto gap-1.5">
-              <LoginComponent title="Update Resume" />
-              {/* <Button className="w-full md:w-auto">
-              <Pencil className="mr-2" />
-              Update Resume
-            </Button> */}
-              <Button className="w-full md:w-auto">
-                <Download className="mr-2" />
-                Download Resume
-              </Button>
-            </PopoverContent>
-          </Popover>
-        )}
       </div>
     </section>
   );
