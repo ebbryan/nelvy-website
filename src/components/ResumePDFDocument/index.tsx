@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/alt-text */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
@@ -85,9 +86,11 @@ const ResumePDFDocument = ({ data }: { data: ResumeData }) => {
               width: 100,
               height: 100,
               marginLeft: 10,
-              border: "1pt solid #000",
+              borderWidth: 1,
+              borderColor: "#000",
+              borderStyle: "solid",
             }}
-            src="/nelvy.jpg" // or use base64 if dynamic
+            src="/nelvy.jpg"
           />
         </View>
 

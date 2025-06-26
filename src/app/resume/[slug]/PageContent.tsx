@@ -18,7 +18,7 @@ const PageContent = ({ id }: { id: string }) => {
     };
 
     fetchResume();
-  }, []);
+  }, [id]);
 
   if (loading)
     return (

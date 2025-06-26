@@ -20,7 +20,6 @@ import { useRouter } from "@bprogress/next";
 const PageContent = () => {
   const router = useRouter();
   const [resumeData, setResumeData] = useState<any>(null);
-  console.log("🚀 ~ PageContent ~ resumeData:", resumeData);
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<string | null>(null);
   const [editedValue, setEditedValue] = useState<any>("");
