@@ -11,6 +11,12 @@ import { Download, Pencil, Save } from "lucide-react";
 import Image from "next/image";
 import Spinner from "@/components/Spinner";
 import { toast } from "sonner";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import LoginComponent from "@/components/Login";
 
 const PageContent = () => {
   const pathname = usePathname();
@@ -18,6 +24,8 @@ const PageContent = () => {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<string | null>(null);
   const [editedValue, setEditedValue] = useState<any>("");
+  const [editMode, setEditMode] = useState(false);
+  console.log("🚀 ~ PageContent ~ editMode:", editMode);
 
   useEffect(() => {
     const fetchResume = async () => {
@@ -26,6 +34,8 @@ const PageContent = () => {
       setResumeData(data);
       setLoading(false);
     };
+    const isLoggedIn = localStorage.getItem("resume_edit_mode") === "true";
+    setEditMode(isLoggedIn);
 
     fetchResume();
   }, []);
@@ -40,21 +50,19 @@ const PageContent = () => {
     setResumeData(updatedData);
     setEditing(null);
 
-    const res = await fetch("/api/resume", {
+    return await fetch("/api/resume", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
       body: JSON.stringify(updatedData),
     });
+  };
 
-    if (res.ok) {
-      toast.success("Successfully updated !", { position: "bottom-left" });
-    } else {
-      toast.error("Failed to save", {
-        description: "Something went wrong while saving your data.",
-      });
-    }
+  const onSaveChanges = () => {
+    localStorage.setItem("resume_edit_mode", "false");
+    toast.success("Resume is up to date.");
+    return window.location.reload();
   };
 
   if (loading)
@@ -63,11 +71,13 @@ const PageContent = () => {
         <Spinner />
       </section>
     );
+
   if (!resumeData) return <p className="p-4 text-red-500">Resume not found.</p>;
 
   const birthDate = resumeData.personalInformation.find(
     (item: any) => item.label === "Birth Date"
   )?.value;
+
   const dynamicAge = birthDate ? calculateAge(birthDate) : "N/A";
 
   const personalInfo = [
@@ -91,24 +101,28 @@ const PageContent = () => {
         <Card className="w-full hidden md:block h-full">
           <CardHeader className="flex flex-row justify-between items-center">
             <CardTitle>Career Objective</CardTitle>
-            {editing === "careerObjective" ? (
-              <Button
-                size="sm"
-                onClick={() => handleSaveClick("careerObjective")}
-              >
-                <Save className="w-4 h-4 mr-1" /> Save
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() =>
-                  handleEditClick("careerObjective", resumeData.careerObjective)
-                }
-              >
-                <Pencil className="w-4 h-4 mr-1" /> Edit
-              </Button>
-            )}
+            {editMode &&
+              (editing === "careerObjective" ? (
+                <Button
+                  size="sm"
+                  onClick={() => handleSaveClick("careerObjective")}
+                >
+                  <Save className="w-4 h-4 mr-1" /> Save
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    handleEditClick(
+                      "careerObjective",
+                      resumeData.careerObjective
+                    )
+                  }
+                >
+                  <Pencil className="w-4 h-4 mr-1" /> Edit
+                </Button>
+              ))}
           </CardHeader>
           <CardContent className="mt-5">
             {editing === "careerObjective" ? (
@@ -139,24 +153,28 @@ const PageContent = () => {
         <Card className="w-full block md:hidden">
           <CardHeader className="flex flex-row justify-between items-center">
             <CardTitle>Career Objective</CardTitle>
-            {editing === "careerObjective" ? (
-              <Button
-                size="sm"
-                onClick={() => handleSaveClick("careerObjective")}
-              >
-                <Save className="w-4 h-4 mr-1" /> Save
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() =>
-                  handleEditClick("careerObjective", resumeData.careerObjective)
-                }
-              >
-                <Pencil className="w-4 h-4 mr-1" /> Edit
-              </Button>
-            )}
+            {editMode &&
+              (editing === "careerObjective" ? (
+                <Button
+                  size="sm"
+                  onClick={() => handleSaveClick("careerObjective")}
+                >
+                  <Save className="w-4 h-4 mr-1" /> Save
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    handleEditClick(
+                      "careerObjective",
+                      resumeData.careerObjective
+                    )
+                  }
+                >
+                  <Pencil className="w-4 h-4 mr-1" /> Edit
+                </Button>
+              ))}
           </CardHeader>
           <CardContent className="mt-5">
             {editing === "careerObjective" ? (
@@ -175,27 +193,28 @@ const PageContent = () => {
           <Card className="w-full">
             <CardHeader className="flex flex-row justify-between items-center">
               <CardTitle>Personal Information</CardTitle>
-              {editing === "personalInformation" ? (
-                <Button
-                  size="sm"
-                  onClick={() => handleSaveClick("personalInformation")}
-                >
-                  <Save className="w-4 h-4 mr-1" /> Save
-                </Button>
-              ) : (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    handleEditClick(
-                      "personalInformation",
-                      resumeData.personalInformation
-                    )
-                  }
-                >
-                  <Pencil className="w-4 h-4 mr-1" /> Edit
-                </Button>
-              )}
+              {editMode &&
+                (editing === "personalInformation" ? (
+                  <Button
+                    size="sm"
+                    onClick={() => handleSaveClick("personalInformation")}
+                  >
+                    <Save className="w-4 h-4 mr-1" /> Save
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      handleEditClick(
+                        "personalInformation",
+                        resumeData.personalInformation
+                      )
+                    }
+                  >
+                    <Pencil className="w-4 h-4 mr-1" /> Edit
+                  </Button>
+                ))}
             </CardHeader>
             <CardContent className="space-y-2">
               {editing === "personalInformation" ? (
@@ -218,24 +237,28 @@ const PageContent = () => {
           <Card className="w-full">
             <CardHeader className="flex flex-row justify-between items-center">
               <CardTitle>Personal Skills</CardTitle>
-              {editing === "personalSkills" ? (
-                <Button
-                  size="sm"
-                  onClick={() => handleSaveClick("personalSkills")}
-                >
-                  <Save className="w-4 h-4 mr-1" /> Save
-                </Button>
-              ) : (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    handleEditClick("personalSkills", resumeData.personalSkills)
-                  }
-                >
-                  <Pencil className="w-4 h-4 mr-1" /> Edit
-                </Button>
-              )}
+              {editMode &&
+                (editing === "personalSkills" ? (
+                  <Button
+                    size="sm"
+                    onClick={() => handleSaveClick("personalSkills")}
+                  >
+                    <Save className="w-4 h-4 mr-1" /> Save
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      handleEditClick(
+                        "personalSkills",
+                        resumeData.personalSkills
+                      )
+                    }
+                  >
+                    <Pencil className="w-4 h-4 mr-1" /> Edit
+                  </Button>
+                ))}
             </CardHeader>
             <CardContent className="list-disc ml-4 space-y-1">
               {editing === "personalSkills" ? (
@@ -258,27 +281,28 @@ const PageContent = () => {
           <Card className="w-full">
             <CardHeader className="flex flex-row justify-between items-center">
               <CardTitle>Educational Attainment</CardTitle>
-              {editing === "educationalAttainment" ? (
-                <Button
-                  size="sm"
-                  onClick={() => handleSaveClick("educationalAttainment")}
-                >
-                  <Save className="w-4 h-4 mr-1" /> Save
-                </Button>
-              ) : (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    handleEditClick(
-                      "educationalAttainment",
-                      resumeData.educationalAttainment
-                    )
-                  }
-                >
-                  <Pencil className="w-4 h-4 mr-1" /> Edit
-                </Button>
-              )}
+              {editMode &&
+                (editing === "educationalAttainment" ? (
+                  <Button
+                    size="sm"
+                    onClick={() => handleSaveClick("educationalAttainment")}
+                  >
+                    <Save className="w-4 h-4 mr-1" /> Save
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      handleEditClick(
+                        "educationalAttainment",
+                        resumeData.educationalAttainment
+                      )
+                    }
+                  >
+                    <Pencil className="w-4 h-4 mr-1" /> Edit
+                  </Button>
+                ))}
             </CardHeader>
             <CardContent className="space-y-2">
               {editing === "educationalAttainment" ? (
@@ -309,24 +333,28 @@ const PageContent = () => {
           <Card className="w-full">
             <CardHeader className="flex flex-row justify-between items-center">
               <CardTitle>Work Experience</CardTitle>
-              {editing === "workExperience" ? (
-                <Button
-                  size="sm"
-                  onClick={() => handleSaveClick("workExperience")}
-                >
-                  <Save className="w-4 h-4 mr-1" /> Save
-                </Button>
-              ) : (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    handleEditClick("workExperience", resumeData.workExperience)
-                  }
-                >
-                  <Pencil className="w-4 h-4 mr-1" /> Edit
-                </Button>
-              )}
+              {editMode &&
+                (editing === "workExperience" ? (
+                  <Button
+                    size="sm"
+                    onClick={() => handleSaveClick("workExperience")}
+                  >
+                    <Save className="w-4 h-4 mr-1" /> Save
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      handleEditClick(
+                        "workExperience",
+                        resumeData.workExperience
+                      )
+                    }
+                  >
+                    <Pencil className="w-4 h-4 mr-1" /> Edit
+                  </Button>
+                ))}
             </CardHeader>
             <CardContent className="space-y-2">
               {editing === "workExperience" ? (
@@ -354,24 +382,28 @@ const PageContent = () => {
           <Card className="w-full">
             <CardHeader className="flex flex-row justify-between items-center">
               <CardTitle>Job Description</CardTitle>
-              {editing === "jobDescription" ? (
-                <Button
-                  size="sm"
-                  onClick={() => handleSaveClick("jobDescription")}
-                >
-                  <Save className="w-4 h-4 mr-1" /> Save
-                </Button>
-              ) : (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    handleEditClick("jobDescription", resumeData.jobDescription)
-                  }
-                >
-                  <Pencil className="w-4 h-4 mr-1" /> Edit
-                </Button>
-              )}
+              {editMode &&
+                (editing === "jobDescription" ? (
+                  <Button
+                    size="sm"
+                    onClick={() => handleSaveClick("jobDescription")}
+                  >
+                    <Save className="w-4 h-4 mr-1" /> Save
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      handleEditClick(
+                        "jobDescription",
+                        resumeData.jobDescription
+                      )
+                    }
+                  >
+                    <Pencil className="w-4 h-4 mr-1" /> Edit
+                  </Button>
+                ))}
             </CardHeader>
             <CardContent className="list-disc ml-4 space-y-1">
               {editing === "jobDescription" ? (
@@ -392,27 +424,28 @@ const PageContent = () => {
           <Card className="w-full">
             <CardHeader className="flex flex-row justify-between items-center">
               <CardTitle>Character References</CardTitle>
-              {editing === "characterReferences" ? (
-                <Button
-                  size="sm"
-                  onClick={() => handleSaveClick("characterReferences")}
-                >
-                  <Save className="w-4 h-4 mr-1" /> Save
-                </Button>
-              ) : (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() =>
-                    handleEditClick(
-                      "characterReferences",
-                      resumeData.characterReferences
-                    )
-                  }
-                >
-                  <Pencil className="w-4 h-4 mr-1" /> Edit
-                </Button>
-              )}
+              {editMode &&
+                (editing === "characterReferences" ? (
+                  <Button
+                    size="sm"
+                    onClick={() => handleSaveClick("characterReferences")}
+                  >
+                    <Save className="w-4 h-4 mr-1" /> Save
+                  </Button>
+                ) : (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() =>
+                      handleEditClick(
+                        "characterReferences",
+                        resumeData.characterReferences
+                      )
+                    }
+                  >
+                    <Pencil className="w-4 h-4 mr-1" /> Edit
+                  </Button>
+                ))}
             </CardHeader>
             <CardContent className="space-y-3">
               {editing === "characterReferences" ? (
@@ -453,10 +486,26 @@ const PageContent = () => {
       </div>
 
       <div className="p-5 w-full items-end justify-end flex">
-        <Button className="w-full md:w-auto">
-          <Download className="mr-2" />
-          Download Resume
-        </Button>
+        {editMode ? (
+          <Button variant="default" onClick={onSaveChanges}>
+            Save Changes
+          </Button>
+        ) : (
+          <Popover>
+            <PopoverTrigger>Menu</PopoverTrigger>
+            <PopoverContent className="flex flex-col w-auto gap-1.5">
+              <LoginComponent title="Update Resume" />
+              {/* <Button className="w-full md:w-auto">
+              <Pencil className="mr-2" />
+              Update Resume
+            </Button> */}
+              <Button className="w-full md:w-auto">
+                <Download className="mr-2" />
+                Download Resume
+              </Button>
+            </PopoverContent>
+          </Popover>
+        )}
       </div>
     </section>
   );

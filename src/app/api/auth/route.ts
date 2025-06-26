@@ -15,16 +15,12 @@ export async function POST(req: NextRequest) {
   const db = client.db("nelvydb");
   const users = db.collection("users");
 
-  // Check if user exists
   const user = await users.findOne({ username });
 
   if (!user) {
-    // Create new user
-    await users.insertOne({ username, password });
-    return NextResponse.json({ message: "User created", status: "created" });
+    return { message: "User does not exist!", success: false };
   }
 
-  // Check password (in production, use bcrypt hash comparison)
   if (user.password !== password) {
     return NextResponse.json(
       { message: "Invalid credentials" },
