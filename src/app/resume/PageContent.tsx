@@ -11,6 +11,11 @@ import { Download, Pencil, Save } from "lucide-react";
 import Image from "next/image";
 import Spinner from "@/components/Spinner";
 import { toast } from "sonner";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const PageContent = () => {
   const pathname = usePathname();
@@ -18,6 +23,8 @@ const PageContent = () => {
   const [loading, setLoading] = useState(true);
   const [editing, setEditing] = useState<string | null>(null);
   const [editedValue, setEditedValue] = useState<any>("");
+  const [editMode, setEditMode] = useState(false);
+  console.log("🚀 ~ PageContent ~ editMode:", editMode);
 
   useEffect(() => {
     const fetchResume = async () => {
@@ -26,6 +33,8 @@ const PageContent = () => {
       setResumeData(data);
       setLoading(false);
     };
+    const isLoggedIn = localStorage.getItem("resume_edit_mode") === "true";
+    setEditMode(isLoggedIn);
 
     fetchResume();
   }, []);
@@ -63,11 +72,13 @@ const PageContent = () => {
         <Spinner />
       </section>
     );
+
   if (!resumeData) return <p className="p-4 text-red-500">Resume not found.</p>;
 
   const birthDate = resumeData.personalInformation.find(
     (item: any) => item.label === "Birth Date"
   )?.value;
+
   const dynamicAge = birthDate ? calculateAge(birthDate) : "N/A";
 
   const personalInfo = [
@@ -91,24 +102,28 @@ const PageContent = () => {
         <Card className="w-full hidden md:block h-full">
           <CardHeader className="flex flex-row justify-between items-center">
             <CardTitle>Career Objective</CardTitle>
-            {editing === "careerObjective" ? (
-              <Button
-                size="sm"
-                onClick={() => handleSaveClick("careerObjective")}
-              >
-                <Save className="w-4 h-4 mr-1" /> Save
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={() =>
-                  handleEditClick("careerObjective", resumeData.careerObjective)
-                }
-              >
-                <Pencil className="w-4 h-4 mr-1" /> Edit
-              </Button>
-            )}
+            {editMode &&
+              (editing === "careerObjective" ? (
+                <Button
+                  size="sm"
+                  onClick={() => handleSaveClick("careerObjective")}
+                >
+                  <Save className="w-4 h-4 mr-1" /> Save
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={() =>
+                    handleEditClick(
+                      "careerObjective",
+                      resumeData.careerObjective
+                    )
+                  }
+                >
+                  <Pencil className="w-4 h-4 mr-1" /> Edit
+                </Button>
+              ))}
           </CardHeader>
           <CardContent className="mt-5">
             {editing === "careerObjective" ? (
@@ -453,10 +468,19 @@ const PageContent = () => {
       </div>
 
       <div className="p-5 w-full items-end justify-end flex">
-        <Button className="w-full md:w-auto">
-          <Download className="mr-2" />
-          Download Resume
-        </Button>
+        <Popover>
+          <PopoverTrigger>Menu</PopoverTrigger>
+          <PopoverContent className="flex flex-col w-auto gap-1.5">
+            <Button className="w-full md:w-auto">
+              <Pencil className="mr-2" />
+              Update Resume
+            </Button>
+            <Button className="w-full md:w-auto">
+              <Download className="mr-2" />
+              Download Resume
+            </Button>
+          </PopoverContent>
+        </Popover>
       </div>
     </section>
   );

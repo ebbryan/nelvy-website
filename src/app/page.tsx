@@ -1,3 +1,9 @@
+import LoginComponent from "@/components/Login";
+
 export default function Home() {
-  return <div>Main landing page here !</div>;
+  return (
+    <div>
+      <LoginComponent />
+    </div>
+  );
 }
