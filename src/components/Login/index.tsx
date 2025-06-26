@@ -19,7 +19,7 @@ type UserAccountType = {
   password: string;
 };
 
-const LoginComponent = () => {
+const LoginComponent = ({ title }: { title: string }) => {
   const {
     register,
     handleSubmit,
@@ -37,7 +37,7 @@ const LoginComponent = () => {
 
     if (res.ok) {
       localStorage.setItem("resume_edit_mode", "true");
-      toast.success("Login successful!");
+      toast.success("Hi Nelvy!");
       window.location.reload();
     } else {
       toast.error(result.message || "Login failed.");
@@ -47,11 +47,11 @@ const LoginComponent = () => {
   return (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <Button variant="outline">Sign In</Button>
+        <Button variant="outline">{title}</Button>
       </AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Sign In</AlertDialogTitle>
+          <AlertDialogTitle>Please Authenticate first</AlertDialogTitle>
           <AlertDialogDescription>
             Enter your credentials to enable edit mode.
           </AlertDialogDescription>
