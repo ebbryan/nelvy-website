@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import clientPromise from "@/lib/mongoDBClient";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -7,7 +8,6 @@ export async function GET() {
   const resume = await db.collection("resume").findOne({});
   return NextResponse.json(resume);
 }
-
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
